@@ -4,12 +4,12 @@ $\lambda$- security parameter.\\
 $n$- $n$-input function.\\
 $\setup(1^{\lambda},1^n):$ Output : (``$\msk$'', $\pk_1, \ldots ,pk_n$)\\
 $\keygen(\msk, f) \rightarrow \sk_f$ Secret key for the function $f$.\\
-$\enc(\pk_i, ctx_i, r_i)\rightarrow \ct_{x_i}$\\
+$\enc(\pk_i, x_i, r_i)\rightarrow \ct_{x_i}$\\
 $\dec(\sk_f,\ct_{x_1},\ldots, \ct_{x_n})\rightarrow \alpha$\\ 
 Compatible pair: $(x_0,x_1,f)$ with respect to a subset $I\subseteq [n]$: Let $x_0=(x_{10},\ldots, x_{n0})$ and $x_1=(x_{11},\ldots, x_{n1})$. Let $\tilde{x}_0$ and $\tilde{x}_1$ be such that for each $i_j\in I$ $\tilde{x}_{0_{i_j}}=\tilde{x}_{1_{i_j}}=$ arbitrary. and if $i_j\notin I$, then $\tilde{x}_{0_{i_j}}=x_{0_{i_j}}$ and $\tilde{x}_{1_{i_j}}=x_{1_{i_j}}$ then $f(\tilde{x}_0)=f(\tilde{x}_1)$. Assume $|I|=t$.
 
 \subsection{security for $\MIFE$}
-Consider the following challenge response game: Let $\Pi=(\setup, \keygen, \enc, \dec)$ be a $(t,n_2)-\MIFE$, Multi-Input Functional Encryption if for any $\PPT$ adversary $\Adv$ probability of winning in the following game is less than $\frac{1}{2}+ \neg(\lambda)$.
+Consider the following challenge response game: Let $\Pi=(\setup, \keygen, \enc, \dec)$ be a $(t,n_2)-\MIFE$, Multi-Input Functional Encryption if for any $\PPT$ adversary $\Adv$'s probability of winning in the following game is less than $\frac{1}{2}+ \neg(\lambda)$.
 \begin{enumerate}
 	\item $\Adv \rightarrow \ch:$ a subset $I\subseteq[n]$ such that $|I|= t$.
 	\item $\ch \rightarrow \Adv:$ $\{\pk_i\}_{i\in I}$.
@@ -19,14 +19,26 @@ Consider the following challenge response game: Let $\Pi=(\setup, \keygen, \enc,
 	\item $\ch \rightarrow \Adv:$ $\ct_{x_b}$.
 	\item $\Adv \rightarrow \ch:$ $f_{n'+1},\ldots,f_{n''}$.
 	\item $\ch \rightarrow \Adv:$ $\sk_{f_{n'+1}},\ldots, \sk_{f_{n''}}$.
-	\item $\Adv \rightarrow \ch:$ $b'$.
+	\item $\Adv \rightarrow \ch:$ $\Adv \rightarrow \ch:$ $\Adv$ sends his response $b'$.
 \end{enumerate}
 
+\subsection{security for $\NIMPC$}
+We know that in $\NIMPC$ required security notion is residual security. Here we will give the residual security notion of $\NIMPC$ by challenge response game format.\\
+Let $\Phi=(\gen, \msg, \eval)$ be a $t-$ private $\NIMPC$ if for any $\PPT$ adversary $\Adv$'s probability of winning the following is less than $\frac{n}{2}+\neg(\lambda)$.
+\begin{enumerate}
+	\item $\Adv \rightarrow \ch:$ a subset $I\subseteq [n]$ such that $|I|=t$.
+	\item $\ch \rightarrow \Adv:$ $\ch$ runs the $\gen(1^{\lambda}, 1^n)$ and sends $\{\rho_i\}_{i\in I}$
+	\item $\Adv \rightarrow \ch:$ $x_0$ and $x_1$ two values from the domain of $f$ such that $x_0|_T = x_1|_T$.
+	\item $\ch \rightarrow \Adv:$ $\ch$ picks $b \in_R \bitset$ runs the $m_i=\msg(x_{b_i},\rho_i)$ $\forall i \notin I$ and sends $m_i$ to $\Adv$.
+	\item $\Adv \rightarrow \ch:$ $\Adv$ sends $f$ to $\ch$.
+	\item $\ch \rightarrow \Adv:$ $\ch$ plugs in $x_{b_i}$ to the function $f$ and computes the residual function $f_{I,x_b}$ and sends $f_{I,x_b}$ to $\Adv$.
+	\item $\Adv \rightarrow \ch:$ $\Adv$ sends his response $b'$. 
+\end{enumerate}
 \subsection{Construction of $t-\NIMPC$ from $(t,1)-\MIFE$}
 Let $\Pi=(\setup_{\Pi}, \keygen_{\Pi}, \enc_{\Pi}, \dec_{\Pi})$ is a $(t,1)-\MIFE$ secure protocol, where the security notion is defined above. We want to construct a $t-\NIMPC$ protocol $\Phi$ for a function $f$, which is designed as follows:
 \begin{align*}
 	\gen(1^{\lambda},1^n,f) &:\setup_{\Pi}(1^{\lambda},1^n) \rightarrow (\msk, \pk_1,\ldots, \pk_n)\\
-		&\textbf{samples} r_1,\ldots,r_n\\
+		&\textbf{samples } r_1,\ldots,r_n\\
 		&\rho_i = (\pk_i, r_i) \forall i\in [n]\\
 		&\rho_0 = \keygen_{\Pi}(\msk, f)= \sk_f\\
 	\msg(x_i,\rho_i) &: m_i=\enc_{\Pi}(\pk_i, x_i, r_i) = \ct_{x_i} \forall i\in[n]\\
@@ -35,4 +47,39 @@ Let $\Pi=(\setup_{\Pi}, \keygen_{\Pi}, \enc_{\Pi}, \dec_{\Pi})$ is a $(t,1)-\MIF
 
 
 \subsection{Reduction from $t-\NIMPC$ to $(t,1)-\MIFE$}
+\begin{theorem}
+If $\Phi$ is not a secure $\NIMPC$ protocol i.e. $\Phi$ does not have residual security against $t$ corrupt parties then $\Pi$ is not a secure $(t,1)-\MIFE$.
+\end{theorem}
 
+\begin{proof}
+Claim is that if $\Phi$ is not residual secure then $\Pi$ is not secure.
+
+To prove that let us assume $\Adv_{\Phi}$ is an $\PPT$ adversary for $\Phi$, who can win the above game for $t-\NIMPC$ with non-negligible probability. 
+
+Now using $\Adv_{\Phi}$ we will construct an adversary for $\Adv_{\Pi}$ who can win the above game for $(t,1)-
+\MIFE$ with non-negligible probability.
+
+Let $\ch$ is the challenger for $(t,1)-\MIFE$ game, and $\Adv_{\Pi}$ is playing the role of the challenger for $t-\NIMPC$ game. 
+
+\begin{enumerate}
+\item $\Adv_{\Phi}$ chooses a subset $I\subseteq [n]$ and sends it to $\Adv_{\Pi}$.
+\item $\Adv_{\Pi}$ sends $I$ to the challenger $\ch$.
+\item $\ch$ runs the $\setup(1^{\lambda}, 1^n)$ and sends $\{\pk_i\}_{i\in I}$ to $\Adv_{\Phi}$.
+\item $\Adv_{\Phi}$ samples $r_i$ uniformly at random for all $i \in I$ and sends $\{\pk_i ,r_i\}_{i\in I}$ to $\Adv_{\Pi}$.
+\item $\Adv_{\Phi}$ sends challenges $x_0, x_1$ to $\Adv_{\Pi}$ such that $x_0|_I=x_1|_I$.
+\item $\Adv_{\Pi}$ sends challenges $x_0, x_1$ to $\ch$ such that $x_0|_I=x_1|_I$.
+\item $\ch$ picks $b\in \bitset$ uniformly at random and picks $r_i$ randomly for all $i \notin I$ and runs $\enc(\pk_i, x_{b_i}, r_i)$ and sends all these cipher-texts to $\Adv_{\Pi}$.
+\item $\Adv_{\Pi}$ sets $m_i=\enc(\pk_i, x_{b_i}, r_i)$ $\forall i\notin I$ and sends these $m_i$'s to $\Adv_{\Phi}$.
+\item $\Adv_{\Pi}$ as a query function, sends $f$ to $\ch$.
+\item $\ch$ uses $\msk$ obtained in the step 3, and runs $\keygen(\msk , f)$ and sends the $\sk_f$ to $\Adv_{\Pi}$.
+\item $\Adv_{\Pi}$ sends $\sk_f$ to $\Adv_{\Phi}$ using this secret key $\Adv_{\Phi}$ will be able to get the outputs of the residual function $f_{I,x_b}$, as $\Adv_{\Phi}$ has the private key as well as randomness to compute the cipher-texts corresponding to $I$.
+\item $\Adv{\Phi}$ sends his response $b'$ to $\Adv_{\Pi}$.
+\item $\Adv_{\Pi}$ forwards $\Adv_{\Phi}$'s response to $\ch$. 
+\end{enumerate}
+
+Note that by the defintion of the residual function $(x_0,x_1,f)$ is a compatible pair. 
+
+Therefore probability of $\Adv_{\phi}$'s winning = $\Adv_{\Pi}$'s winning, which is non-negligible, which leads to the contradiction that $\Pi$ is not a secure $(t,1)-\MIFE$.
+
+Therefore, the above construction of $\Phi$ is a $t-$private $\NIMPC$ protocol.
+\end{proof}
