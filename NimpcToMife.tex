@@ -1,2 +1,17 @@
-\section{NIMPC to MIFE}
-\subsection{MIFE}
+\section{$\NIMPC$ to $\MIFE$}
+\subsection{$\MIFE$}
+$\lambda$- security parameter.\\
+$n$- $n$-input function.\\
+$\setup(1^{\lambda},1^n):$ Output : (``$\msk$'', $\pk_1, \ldots ,pk_n$)\\
+$\keygen(\msk, f) \rightarrow \sk_f$ Secret key for the function $f$.\\
+$\enc(\pk_i, x_i, r_i)\rightarrow \ct_i$\\
+$\dec(\sk_f,x_1,\ldots, x_n)\rightarrow \alpha$\\ 
+Compatible pair: $(x_0,x_1,f)$ with respect to a subset $I\subseteq [n]$: Let $x_0=(x_{10},\ldots, x_{n0})$ and $x_1=(x_{11},\ldots, x_{n1})$. Let $\tilde{x}_0$ and $\tilde{x}_1$ be such that for each $i_j\in I$ $\tilde{x}_{0_{i_j}}=\tilde{x}_{1_{i_j}}=$ arbitrary. and if $i_j\notin I$, then $\tilde{x}_{0_{i_j}}=x_{0_{i_j}}$ and $\tilde{x}_{1_{i_j}}=x_{1_{i_j}}$ then $f(\tilde{x}_0)=f(\tilde{x}_1)$. Assume $|I|=t$.
+
+\subsection{security for $\MIFE$}
+Consider the following challenge response game:
+\begin{enumerate}
+	\item $\Adv \rightarrow \ch:$ a subset $I\subseteq[n]$ such that $|I|= t$.
+	\item $\ch \rightarrow \Adv:$ $\{\pk_i\}_{i\in I}$.
+	\item $f_1,\ldots,f_n$
+\end{enumerate}
